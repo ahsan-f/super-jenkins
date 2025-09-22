@@ -8,6 +8,8 @@ on:
       - main
     paths:
       - 'jenkins-ngrok-builder/**' # Trigger only if changes are in the Jenkins build directory
+       - main
+  workflow_dispatch:
 
 jobs:
   build-and-push-jenkins-image:
