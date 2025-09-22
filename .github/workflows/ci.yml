@@ -1,0 +1,69 @@
+# .github/workflows/deploy-jenkins.yml
+
+name: Deploy Jenkins with Ngrok
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'jenkins-ngrok-builder/**' # Trigger only if changes are in the Jenkins build directory
+
+jobs:
+  build-and-push-jenkins-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build custom Jenkins image
+        run: docker build ./jenkins-ngrok-builder --tag ${{ secrets.DOCKER_USERNAME }}/jenkins-ngrok:latest
+
+      - name: Push custom Jenkins image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/jenkins-ngrok:latest
+
+  deploy-jenkins-container:
+    runs-on: ubuntu-latest
+    needs: build-and-push-jenkins-image # This job depends on the previous one
+    environment: production # Optional: For environment-specific secrets/protections
+    steps:
+      - name: Deploy Jenkins container to Remote Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Pulling the latest custom Jenkins image..."
+            docker pull ${{ secrets.DOCKER_USERNAME }}/jenkins-ngrok:latest
+
+            echo "Stopping and removing old Jenkins container if it exists..."
+            docker stop jenkins-ngrok-container || true
+            docker rm jenkins-ngrok-container || true
+            
+            echo "Running new Jenkins container with Ngrok..."
+            # For Docker-in-Docker functionality, you need to mount the Docker socket.
+            # This requires the remote server to have Docker installed.
+            docker run -d \
+              --name jenkins-ngrok-container \
+              -p 8080:8080 \
+              -p 50000:50000 \
+              -v jenkins_home:/var/jenkins_home \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -e NGROK_AUTH_TOKEN=${{ secrets.NGROK_AUTH_TOKEN }} \
+              ${{ secrets.DOCKER_USERNAME }}/jenkins-ngrok:latest
+
+            echo "Waiting for Jenkins and Ngrok to start (check logs on server for Ngrok URL)..."
+            sleep 30 # Give Jenkins/Ngrok time to boot. Adjust as needed.
+            
+            echo "Deployment complete. Check your server logs for the Ngrok URL."
+            # To retrieve the Ngrok URL, you'd typically need to SSH back in 
+            # and check /var/log/jenkins/ngrok_url.log or the container logs.
+            # For a more automated approach, consider a custom script on the VM to
+            # notify you of the URL, or integrate Ngrok's API directly.
