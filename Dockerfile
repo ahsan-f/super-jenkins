@@ -18,7 +18,7 @@ RUN apt-get update && \
     curl \
     gnupg \
     lsb-release \
-    openjdk-11-jdk \
+    openjdk-17-jdk \
     unzip \
     jq && \
     \
