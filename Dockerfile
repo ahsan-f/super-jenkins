@@ -21,7 +21,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 # - unzip: Required for ngrok.
 RUN apt-get update && \
     apt-get install -y software-properties-common && \
-    apt-get update
         git \
         curl \
         gnupg \
