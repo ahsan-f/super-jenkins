@@ -1,22 +1,23 @@
-# .github/workflows/deploy-jenkins.yml
-
-name: Deploy Jenkins with Ngrok
+name: Docker CI/CD
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'jenkins-ngrok-builder/**' # Trigger only if changes are in the Jenkins build directory
-       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build-and-push-jenkins-image:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -24,10 +25,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build custom Jenkins image
-        run: docker build ./jenkins-ngrok-builder --tag ${{ secrets.DOCKER_USERNAME }}/jenkins-ngrok:latest
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ahsand10/jenkins
+            ahsand10/jenkin:latest
 
-      - name: Push custom Jenkins image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/jenkins-ngrok:latest
-
- 
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose -f ./docker-compose.yml up -d
+        working-directory: ./ # <-- FIX: This sets the working directory to the root
