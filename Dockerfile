@@ -56,8 +56,8 @@ EXPOSE 50000
 # Set the entrypoint to our custom script
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Set the default command for Jenkins
-CMD ["jenkins"]
+# The `jenkins` part will be passed as an argument to the entrypoint script
+CMD ["/usr/local/bin/jenkins.sh"]
 
 # Switch back to the 'jenkins' user for security
 USER jenkins
