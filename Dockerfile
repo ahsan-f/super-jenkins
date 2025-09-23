@@ -20,7 +20,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # - docker-cli: To interact with a Docker daemon (e.g., Docker-in-Docker or a remote daemon).
 # - unzip: Required for ngrok.
 RUN apt-get update && \
-    apt-get install -y \
+    apt-get install -y software-properties-common && \
+    apt-get update
         git \
         curl \
         gnupg \
