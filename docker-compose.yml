@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  jenkins-controller:
+    container_name: jenkins-controller
+    # Use the image built and pushed by the GitHub Actions workflow
+    image: ahsand10/jenkins:latest
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+    # This assumes the Jenkins controller is also the agent.
+    # If a separate agent is needed, you'd add another service.
+    # Since the workflow builds a single image, this is the most logical setup.
+    networks:
+      - jenkins-network
+
+volumes:
+  jenkins_data:
+    driver: local
+
+networks:
+  jenkins-network:
+    driver: bridge
