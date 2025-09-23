@@ -1,6 +1,6 @@
 #!/bin/bash
 # entrypoint.sh: jenkins-ngrok-builder/entrypoint.sh
-
+export NGROK_AUTHTOKEN=335o6Wmz7pe6BlhcLRAhKPKAas6_5dfx474zMCTBqDN9RXNcb
 # Check if NGROK_AUTH_TOKEN is provided
 if [ -z "$NGROK_AUTH_TOKEN" ]; then
   echo "WARNING: NGROK_AUTH_TOKEN environment variable not set. Ngrok will not start."
