@@ -10,6 +10,7 @@ USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install necessary build tools and dependencies in a single RUN command.
+# This approach reduces image layers and improves build efficiency.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     software-properties-common \
