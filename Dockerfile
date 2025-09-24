@@ -1,21 +1,20 @@
-# Use an official OpenJDK image as the base.
-# It already has a Java Runtime Environment, which is necessary to run Jenkins.
-FROM openjdk:11-jdk-slim
+# Use an official OpenJDK image with Java 21 as the base.
+# OpenJDK 21 is a Long-Term Support (LTS) version.
+FROM openjdk:21-jdk-slim
 
 # Set an argument for the Jenkins WAR file version.
-# This makes your Dockerfile more flexible.
-ARG JENKINS_VERSION=2.462
+# We'll use the latest LTS version, which is compatible with Java 21.
+# We will use the latest LTS version from the jenkins.io website
+ARG JENKINS_VERSION=2.466.1
 
 # Set the download URL for the Jenkins WAR file.
-ENV JENKINS_URL=https://updates.jenkins.io/download/war/${JENKINS_VERSION}/jenkins.war
+ENV JENKINS_URL=https://updates.jenkins.io/download/war-stable/${JENKINS_VERSION}/jenkins.war
 
 # Set the working directory inside the container.
 WORKDIR /usr/local/jenkins
 
-# Download the Jenkins WAR file.
-# The 'wget' command is used to download the file from the specified URL.
-# The '-O' flag saves the file with the name 'jenkins.war'.
-# The fix: added `libfreetype6` and `fontconfig` to the `apt-get install` command.
+# Download the Jenkins WAR file and install required dependencies.
+# The 'libfreetype6' and 'fontconfig' packages are necessary for Jenkins to run correctly.
 RUN apt-get update && apt-get install -y wget libfreetype6 fontconfig && \
     wget -O jenkins.war ${JENKINS_URL} && \
     rm -rf /var/lib/apt/lists/*
