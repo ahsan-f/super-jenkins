@@ -1,20 +1,18 @@
 # Use an official OpenJDK image with Java 21 as the base.
-# OpenJDK 21 is a Long-Term Support (LTS) version.
 FROM openjdk:21-jdk-slim
 
-# Set an argument for the Jenkins WAR file version.
-# We'll use the latest LTS version, which is compatible with Java 21.
+# Set the Jenkins LTS version. It's recommended to use the latest LTS.
 ARG JENKINS_VERSION=2.466.1
 
-# Set the download URL for the Jenkins WAR file.
-# The URL for stable releases uses the major/minor version (e.g., 2.466)
+# Set the download URL for the Jenkins WAR file using a stable path.
 ENV JENKINS_URL=https://updates.jenkins.io/download/war-stable/2.466/jenkins.war
 
 # Set the working directory inside the container.
 WORKDIR /usr/local/jenkins
 
 # Download the Jenkins WAR file and install required dependencies.
-# The 'libfreetype6' and 'fontconfig' packages are necessary for Jenkins to run correctly.
+# The 'libfreetype6' and 'fontconfig' packages are necessary for Jenkins to run correctly
+# because they are required for generating graphical elements like charts.
 RUN apt-get update && apt-get install -y wget libfreetype6 fontconfig && \
     wget -O jenkins.war ${JENKINS_URL} && \
     rm -rf /var/lib/apt/lists/*
@@ -23,5 +21,4 @@ RUN apt-get update && apt-get install -y wget libfreetype6 fontconfig && \
 EXPOSE 8080
 
 # The command to run when the container starts.
-# This executes the Jenkins WAR file.
 CMD ["java", "-Djava.awt.headless=true", "-jar", "jenkins.war"]
