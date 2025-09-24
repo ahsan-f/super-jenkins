@@ -1,10 +1,11 @@
-# Use an official OpenJDK image with Java 21 as the base.
+ Use an official OpenJDK image with Java 21 as the base.
 FROM openjdk:21-jdk-slim
 
 # Set the Jenkins LTS version. It's recommended to use the latest LTS.
 ARG JENKINS_VERSION=2.466.1
 
 # Set the download URL for the Jenkins WAR file using a stable path.
+# We are using the major.minor version number (2.466) in the URL.
 ENV JENKINS_URL=https://updates.jenkins.io/download/war-stable/2.466/jenkins.war
 
 # Set the working directory inside the container.
