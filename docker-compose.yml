@@ -1,1 +1,1 @@
-docker run -p 8080:8080 --name jenkins-container my-jenkins-image
+docker run -p 8080:8080 --name jenkins-container /ahsand10/jenkins/my-jenkins-image
