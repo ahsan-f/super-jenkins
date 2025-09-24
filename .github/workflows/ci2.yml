@@ -32,8 +32,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ahsand10/jenkins
-            ahsand10/jenkin:latest
+            
+            ahsand10/jenkins:latest
 
       - name: Deploy with Docker Compose
         run: |
