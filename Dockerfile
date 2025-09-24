@@ -6,7 +6,7 @@ ARG JENKINS_VERSION=2.466.1
 
 # Set the download URL for the Jenkins WAR file using a stable path.
 # We are using the major.minor version number (2.466) in the URL.
-ENV JENKINS_URL=https://updates.jenkins.io/download/war-stable/2.466/jenkins.war
+ENV JENKINS_URL=https://updates.jenkins.io/download/war/2.466/jenkins.war
 
 # Set the working directory inside the container.
 WORKDIR /usr/local/jenkins
