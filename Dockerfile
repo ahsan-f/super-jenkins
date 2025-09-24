@@ -15,7 +15,8 @@ WORKDIR /usr/local/jenkins
 # Download the Jenkins WAR file.
 # The 'wget' command is used to download the file from the specified URL.
 # The '-O' flag saves the file with the name 'jenkins.war'.
-RUN apt-get update && apt-get install -y wget && \
+# The fix: added `libfreetype6` and `fontconfig` to the `apt-get install` command.
+RUN apt-get update && apt-get install -y wget libfreetype6 fontconfig && \
     wget -O jenkins.war ${JENKINS_URL} && \
     rm -rf /var/lib/apt/lists/*
 
