@@ -1,63 +1,27 @@
-# Dockerfile: jenkins-ngrok-builder/Dockerfile
+# Use an official OpenJDK image as the base.
+# It already has a Java Runtime Environment, which is necessary to run Jenkins.
+FROM openjdk:11-jdk-slim
 
-# Use the official Jenkins Long-Term Support (LTS) image as the base
-FROM jenkins/jenkins:lts
+# Set an argument for the Jenkins WAR file version.
+# This makes your Dockerfile more flexible.
+ARG JENKINS_VERSION=2.462
 
-# Switch to the root user to install software
-USER root
+# Set the download URL for the Jenkins WAR file.
+ENV JENKINS_URL=https://updates.jenkins.io/download/war/${JENKINS_VERSION}/jenkins.war
 
-# Disable interactive prompts for apt-get
-ENV DEBIAN_FRONTEND=noninteractive
+# Set the working directory inside the container.
+WORKDIR /usr/local/jenkins
 
-# Install necessary build tools and dependencies in a single RUN command.
-# This approach reduces image layers and improves build efficiency.
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    software-properties-common \
-    git \
-    curl \
-    gnupg \
-    lsb-release \
-    openjdk-17-jdk \
-    unzip \
-    jq && \
-    \
-    # Add Node.js 16.x repository and install Node.js
-    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs && \
-    \
-    # Install Maven
-    apt-get install -y maven && \
-    \
-    # Install Docker CLI (client)
-    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && \
-    apt-get install -y docker-ce-cli && \
-    \
-    # Download and install Ngrok
-    curl -sS -o /tmp/ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
-    unzip /tmp/ngrok.zip -d /usr/local/bin && \
-    rm /tmp/ngrok.zip && \
-    chmod +x /usr/local/bin/ngrok && \
-    \
-    # Clean up apt caches to reduce image size
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Download the Jenkins WAR file.
+# The 'wget' command is used to download the file from the specified URL.
+# The '-O' flag saves the file with the name 'jenkins.war'.
+RUN apt-get update && apt-get install -y wget && \
+    wget -O jenkins.war ${JENKINS_URL} && \
+    rm -rf /var/lib/apt/lists/*
 
-# Add a script to start Jenkins and Ngrok
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Expose Jenkins ports
+# Expose the default Jenkins port.
 EXPOSE 8080
-EXPOSE 50000
 
-# Set the entrypoint to our custom script
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Set the default command for Jenkins
-CMD ["jenkins"]
-
-# Switch back to the 'jenkins' user for security
-USER jenkins
+# The command to run when the container starts.
+# This executes the Jenkins WAR file.
+CMD ["java", "-jar", "jenkins.war"]
