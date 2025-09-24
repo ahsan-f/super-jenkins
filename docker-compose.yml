@@ -1,13 +1,13 @@
 version: '3.8'
 
 services:
-  jenkins:
+    jenkins:
     image: 'ahsand10/jenkins:latest'
     container_name: jenkins-container
     ports:
       - '8080:8080'
     volumes:
       - jenkins_home:/var/jenkins_home
-   command: java -Djava.awt.headless=true -jar /usr/local/jenkins/jenkins.war
+    command: java -Djava.awt.headless=true -jar /usr/local/jenkins/jenkins.war
 volumes:
   jenkins_home:
