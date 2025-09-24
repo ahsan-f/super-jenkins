@@ -24,4 +24,4 @@ EXPOSE 8080
 
 # The command to run when the container starts.
 # This executes the Jenkins WAR file.
-CMD ["java", "-jar", "jenkins.war"]
+CMD ["java", "-Djava.awt.headless=true", "-jar", "jenkins.war"]
