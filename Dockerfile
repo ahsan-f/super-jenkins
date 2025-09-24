@@ -4,11 +4,11 @@ FROM openjdk:21-jdk-slim
 
 # Set an argument for the Jenkins WAR file version.
 # We'll use the latest LTS version, which is compatible with Java 21.
-# We will use the latest LTS version from the jenkins.io website
 ARG JENKINS_VERSION=2.466.1
 
 # Set the download URL for the Jenkins WAR file.
-ENV JENKINS_URL=https://updates.jenkins.io/download/war-stable/${JENKINS_VERSION}/jenkins.war
+# The URL for stable releases uses the major/minor version (e.g., 2.466)
+ENV JENKINS_URL=https://updates.jenkins.io/download/war-stable/2.466/jenkins.war
 
 # Set the working directory inside the container.
 WORKDIR /usr/local/jenkins
