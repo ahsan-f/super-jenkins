@@ -1,4 +1,4 @@
- Use an official OpenJDK image with Java 21 as the base.
+# Use an official OpenJDK image with Java 21 as the base.
 FROM openjdk:21-jdk-slim
 
 # Set the Jenkins LTS version. It's recommended to use the latest LTS.
